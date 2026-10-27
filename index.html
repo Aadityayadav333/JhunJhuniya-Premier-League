@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#05070f">
+<title>JhunJhuniya Premier League</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<!-- ============ HUD ============ -->
+<div id="hud" class="hidden">
+  <div id="scoreboard">
+    <div class="sb-team" id="sbTeam">—</div>
+    <div class="sb-score"><span id="sbRuns">0</span><small>/</small><span id="sbWkts">0</span></div>
+    <div class="sb-meta"><span id="sbOvers">0.0</span> ov · <span id="sbInfo">CRR 0.00</span></div>
+    <div id="sbTarget"></div>
+  </div>
+  <div id="batcard"></div>
+  <div id="bowlcard"></div>
+  <div id="thisover"></div>
+  <div id="topright">
+    <button id="btnSpeed" title="Simulation speed">1x</button>
+    <button id="btnCam" title="Camera (B)">CAM</button>
+    <button id="btnFull" title="Fullscreen">⛶</button>
+    <button id="btnSound" title="Sound">🔊</button>
+    <button id="btnMusic" title="Background music">🎵</button>
+    <button id="btnVoice" title="Commentary: off / English / हिन्दी">🗣️ off</button>
+  </div>
+  <div id="commentary"></div>
+  <div id="radarWrap"><canvas id="radar" width="230" height="230"></canvas><div id="radarTxt">FIELD ADVISOR</div></div>
+  <div id="captain"><div class="avatar">G</div><div class="bubble" id="capText">Let's go!</div></div>
+  <div id="reviews"><span id="revA"></span><span id="revB"></span></div>
+  <div id="riskTag"></div>
+  <div id="controls">
+    <button data-shot="defend"><b>X</b> Defend</button>
+    <button data-shot="single"><b>C</b> Single</button>
+    <button data-shot="drive"><b>SPACE</b> Drive</button>
+    <button data-shot="loft"><b>V / ↑+SPACE</b> Loft</button>
+    <div class="aimrow"><b>← →</b> aim <input type="range" id="aim" min="-100" max="100" value="0"></div>
+  </div>
+  <div id="timing"><div id="timingBar"></div></div>
+  <button id="reviewBtn" class="hidden">📺 REVIEW <span id="reviewLeft"></span></button>
+  <div id="partner" class="hidden">PARTNER ON STRIKE</div>
+</div>
+
+<div id="banner"></div>
+<div id="decision" class="hidden"><div class="d-kicker" id="dKick"></div><div class="d-main" id="dMain"></div><div class="d-sub" id="dSub"></div></div>
+<div id="hawk" class="hidden">
+  <div class="hk-title">BALL TRACKING</div>
+  <div class="hk-row"><span>PITCHING</span><b id="hkP">—</b></div>
+  <div class="hk-row"><span>IMPACT</span><b id="hkI">—</b></div>
+  <div class="hk-row"><span>WICKETS</span><b id="hkW">—</b></div>
+  <div class="hk-row"><span>ON-FIELD DECISION</span><b id="hkO">—</b></div>
+</div>
+<div id="toast"></div>
+
+<!-- ============ screens ============ -->
+<div id="menu" class="screen">
+  <div class="panel menu">
+    <div class="logo">JhunJhuniya<br><span>PREMIER LEAGUE</span></div>
+    <p class="tag">3D cricket · Legion Warriors vs Matrix Defenders</p>
+    <label>Your name <input id="inName" maxlength="16" placeholder="Enter your name" value=""></label>
+    <div class="opt"><span>Overs</span><div class="seg" id="segOvers"><button data-v="10" class="on">10</button><button data-v="20">20</button></div></div>
+    <div class="opt"><span>Time</span><div class="seg" id="segTime"><button data-v="morning">🌅 Morning</button><button data-v="evening" class="on">🌇 Evening</button><button data-v="night">🌙 Night</button></div></div>
+    <div class="opt"><span>Weather</span><div class="seg" id="segWeather"><button data-v="summer" class="on">☀️ Summer</button><button data-v="cold">❄️ Cold</button><button data-v="cloudy">☁️ Cloudy</button></div></div>
+    <div class="opt"><span>Commentary</span><div class="seg" id="segVoice"><button data-v="off" class="on">Off</button><button data-v="en">English</button><button data-v="hi">हिन्दी</button></div></div>
+    <button id="btnStart" class="big">PLAY MATCH</button>
+    <p class="small">You are <b>New Player</b> in <b style="color:#ff6b6b">Legion Warriors</b>. Captain Goldclad will guide you.</p>
+  </div>
+</div>
+
+<div id="toss" class="screen hidden">
+  <div class="panel toss">
+    <h2>THE TOSS</h2>
+    <div id="coinWrap"><div id="coin"><div class="face h">H</div><div class="face t">T</div></div></div>
+    <div id="tossMsg">Captain Goldclad is up for the toss. Call it!</div>
+    <div id="tossBtns"><button class="big" data-call="heads">HEADS</button><button class="big" data-call="tails">TAILS</button></div>
+  </div>
+</div>
+
+<div id="bowlPick" class="screen hidden">
+  <div class="panel">
+    <h2>Your over!</h2>
+    <p>Choose your bowling type</p>
+    <div class="grid" id="bowlTypes">
+      <button data-type="fast">⚡ Fast</button><button data-type="swing">🌪 Swing</button><button data-type="off">🌀 Off Spin</button><button data-type="leg">🌀 Leg Spin</button><button data-type="carrom">🎯 Carrom Ball</button>
+    </div>
+  </div>
+</div>
+<div id="aimGame" class="hidden">
+  <div id="aimTitle">Click to lock LINE</div>
+  <div class="track"><div id="aimMarker"></div><div class="sweet"></div></div>
+  <div id="aimHint"></div>
+</div>
+
+<div id="dash" class="screen hidden"><div class="panel dash" id="dashBody"></div></div>
+<div id="rotate"><div>📱↻<p>Rotate your phone to <b>landscape</b> for the best view</p><button id="btnRot">Continue anyway</button></div></div>
+<div id="loading">Loading 3D engine…</div>
+
+<script src="lib/three.min.js"></script>
+<script src="game.bundle.js"></script>
+</body>
+</html>
